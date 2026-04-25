@@ -1,0 +1,59 @@
+# Python
+
+**pycache**/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+
+venv/
+.env/
+.env
+
+# Django
+
+*.log
+db.sqlite3
+media/
+staticfiles/
+
+# Environment variables
+
+.env.*
+!.env.example
+
+# VSCode / IDE
+
+.vscode/
+.idea/
+
+# OS
+
+.DS_Store
+Thumbs.db
+
+# Testing / coverage
+
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Migrations (optional)
+
+# Nếu bạn muốn commit migration thì comment dòng dưới
+
+# */migrations/*
+
+# !*/migrations/**init**.py
+
+# Node (nếu có frontend sau này)
+
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# Docker (nếu dùng)
+
+*.pid
+*.seed
+*.pid.lock
