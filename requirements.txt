@@ -10,3 +10,4 @@ django-extensions
 django-cors-headers
 
 drf-spectacular
+cloudinary django-cloudinary-storage

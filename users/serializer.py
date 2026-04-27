@@ -19,3 +19,26 @@ class RegisterSerializer(serializers.ModelSerializer):
 # Custom Token Serializer để sử dụng email thay vì username
 class CustomTokenSerializer(TokenObtainPairSerializer):
     username_field = 'email'
+
+
+class UserSerializer(serializers.ModelSerializer):
+    avatar_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'full_name', 'phone', 'avatar_url', 'role']
+
+    def get_avatar_url(self, obj):
+        if obj.avatar_url:
+            return obj.avatar_url.url
+        return None
+    
+
+class UpdateUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['full_name', 'phone', 'avatar_url']
+    
+
+class LogoutSerializer(serializers.Serializer):
+    refresh = serializers.CharField()

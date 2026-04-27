@@ -10,8 +10,13 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 from datetime import timedelta
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -39,10 +44,22 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # third-party apps
+    # ===========third-party apps============
+    #swagger
     'drf_spectacular',
+
+    # rest framework
     'rest_framework',
-    # apps
+
+    # jwt
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
+
+    #cloudinary
+    'cloudinary',
+    'cloudinary_storage',
+
+    # ===========apps============
     'users',
 ]
 
@@ -81,10 +98,15 @@ WSGI_APPLICATION = 'homestay_booking_core.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.getenv("DB_NAME"),
+        'USER': os.getenv("DB_USER"),
+        'PASSWORD': os.getenv("DB_PASSWORD"),
+        'HOST': os.getenv("DB_HOST"),
+        'PORT': os.getenv("DB_PORT"),
     }
 }
+
 
 
 # Password validation
@@ -124,8 +146,22 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 # ====================================================================================================================================
+# ====================================================================================================================================
+# ====================================================================================================================================
 
+# =========================
+
+# Custom User Model
+
+# =========================
 AUTH_USER_MODEL = 'users.User' # thêm dòng này để sử dụng custom user model nếu khoongg sẽ dùng default user model
+
+
+# =========================
+
+# Django REST Framework
+
+# =========================
 
 # Cấu hình cho Django REST Framework
 REST_FRAMEWORK = {
@@ -135,9 +171,45 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
+
+# =========================
+
+# JWT Authentication
+
+# =========================
+
 # Cấu hình cho Simple JWT
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-    'AUTH_HEADER_TYPES': ('Bearer',),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=int(os.getenv('ACCESS_TOKEN_LIFETIME'))),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=int(os.getenv('REFRESH_TOKEN_LIFETIME'))),
+    'AUTH_HEADER_TYPES': (os.getenv('AUTH_HEADER_TYPES'),),
 }
+
+
+# =========================
+
+# Spectacular Settings (sử dụng drf-spectacular để tự động tạo tài liệu API theo chuẩn OpenAPI ) 
+
+# =========================
+# SWAGGER UI settings
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Homestay Booking API',
+    'VERSION': '1.0.0',
+    'COMPONENT_SPLIT_REQUEST': True,
+}
+
+
+# =========================
+
+# Cloudinary Storage (optional)
+
+# =========================
+
+# Cấu hình cho Cloudinary để lưu trữ ảnh trên đám mây
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.getenv('CLOUD_NAME'),
+    'API_KEY': os.getenv('API_KEY'),
+    'API_SECRET': os.getenv('API_SECRET'),
+}
+# sử dụng Cloudinary để lưu trữ ảnh, đặt DEFAULT_FILE_STORAGE thành MediaCloudinaryStorage
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'

@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
-
+from cloudinary_storage.storage import MediaCloudinaryStorage
 
 # =====================
 # User Manager
@@ -55,7 +55,10 @@ class User(AbstractUser):
         default=Role.CUSTOMER
     )
 
-    avatar_url = models.URLField(blank=True, null=True)
+    avatar_url = models.ImageField( upload_to='avatars/',
+                                    storage=MediaCloudinaryStorage(),
+                                    blank=True, 
+                                    null=True)
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
