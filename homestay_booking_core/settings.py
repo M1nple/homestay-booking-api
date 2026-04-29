@@ -61,6 +61,8 @@ INSTALLED_APPS = [
 
     # ===========apps============
     'users',
+    'homestays',
+    'locations',
 ]
 
 MIDDLEWARE = [
