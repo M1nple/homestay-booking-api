@@ -39,10 +39,11 @@ htmlcov/
 .pytest_cache/
 
 # Migrations (optional)
-
+migrations/
 # Nếu bạn muốn commit migration thì comment dòng dưới
 
 # */migrations/*
+
 
 # !*/migrations/**init**.py
 
