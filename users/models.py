@@ -74,3 +74,65 @@ class User(AbstractUser):
     def __str__(self):
         return self.email
 
+
+# =====================
+# Host
+# =====================
+
+class HostRequest(models.Model):
+    class Status(models.TextChoices):
+        PENDING = 'PENDING'
+        APPROVED = 'APPROVED'
+        REJECTED = 'REJECTED'
+        CANCELLED = 'CANCELLED'
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    status = models.CharField(max_length=20, choices=Status.choices)
+
+    business_name = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    identity_number = models.CharField(max_length=12)
+    identity_image = models.ImageField( upload_to='identity_images/',
+                                        storage=MediaCloudinaryStorage(),
+                                        blank=True, 
+                                        null=True)
+    reason = models.TextField(blank=True, null=True)
+
+
+    reviewed_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name='reviewed_requests')
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+    rejection_reason = models.TextField(blank=True, null=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+class HostProfile(models.Model):
+    class Status(models.TextChoices):
+        PENDING = 'PENDING'
+        ACTIVE = 'ACTIVE'
+        SUSPENDED = 'SUSPENDED'
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    business_name = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+
+    avatar_url = models.URLField(blank=True, null=True)
+    identity_number = models.CharField(max_length=100, blank=True, null=True)
+    identity_image = models.URLField(blank=True, null=True)
+
+    tax_code = models.CharField(max_length=50, blank=True, null=True)
+    bank_account = models.CharField(max_length=100)
+    bank_name = models.CharField(max_length=100)
+    account_holder_name = models.CharField(max_length=255)
+
+    contact_phone = models.CharField(max_length=20, blank=True, null=True)
+    contact_email = models.EmailField(blank=True, null=True)
+
+    status = models.CharField(max_length=20, choices=Status.choices)
+
+    approved_at = models.DateTimeField(null=True, blank=True)
+    approved_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name='approved_hosts')
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)

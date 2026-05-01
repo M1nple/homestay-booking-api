@@ -1,7 +1,7 @@
-from models import Homestay
+from homestays.models import Homestay
 from users.permissions import IsHost
 from homestays.serializer import HomestaySerializer
-from rest_framework import ModelViewSet
+from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser
 

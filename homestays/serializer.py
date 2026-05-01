@@ -8,7 +8,6 @@ class HomestaySerializer(serializers.ModelSerializer):
                 'name', 
                 'address', 
                 'description', 
-                'price_per_night', 
                 'province', 
                 'district',
                 'ward',

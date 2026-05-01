@@ -1,6 +1,6 @@
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import serializers
-from .models import User
+from .models import User, HostRequest, HostProfile
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True)
@@ -42,3 +42,9 @@ class UpdateUserSerializer(serializers.ModelSerializer):
 
 class LogoutSerializer(serializers.Serializer):
     refresh = serializers.CharField()
+
+
+class HostRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HostRequest
+        fields = ['business_name', 'description', 'identity_number', 'identity_image', 'reason']
