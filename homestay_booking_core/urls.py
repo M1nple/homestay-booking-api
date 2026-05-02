@@ -32,5 +32,6 @@ urlpatterns = [
     path('api/auth/', include('users.urls')), # thêm đường dẫn cho app users
     path('api/locations/', include('locations.urls')), # thêm đường dẫn cho app locations
     path('api/homestays/', include('homestays.urls')), # thêm đường dẫn cho app homestays
+    path('api/rooms/', include('rooms.urls')), # thêm đường dẫn cho app rooms
 ]
 

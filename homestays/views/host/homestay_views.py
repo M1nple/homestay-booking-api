@@ -1,6 +1,6 @@
 from django.utils import timezone
-from homestays.models import Homestay
 from users.permissions import IsHost
+from homestays.models import Homestay
 from homestays.serializer import HomestaySerializer, HomestayDetailSerializer,MyHomestaySerializer, UpdateHomestaySerializer
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
