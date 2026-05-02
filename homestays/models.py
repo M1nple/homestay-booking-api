@@ -1,6 +1,8 @@
 from django.db import models
 from locations.models import Province, District, Ward
 from users.models import User
+from cloudinary_storage.storage import MediaCloudinaryStorage
+
 
 class Homestay(models.Model):
     owner = models.ForeignKey(
@@ -31,3 +33,11 @@ class Homestay(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True, db_index=True)
 
+class HomestayImage(models.Model):
+    homestay = models.ForeignKey(Homestay, on_delete=models.CASCADE, related_name='images')
+    image_url = models.ImageField(upload_to='homestay_images/',
+                                    storage=MediaCloudinaryStorage(),
+                                    blank=True,
+                                    null=True)
+    is_primary = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)

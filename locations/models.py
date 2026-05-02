@@ -36,7 +36,8 @@ class District(models.Model):
     province = models.ForeignKey(
         Province,
         on_delete=models.CASCADE,
-        related_name='districts'
+        related_name='districts',
+        db_index=True
     )
 
     code = models.IntegerField(unique=True)
@@ -68,7 +69,8 @@ class Ward(models.Model):
     district = models.ForeignKey(
         District,
         on_delete=models.CASCADE,
-        related_name='wards'
+        related_name='wards',
+        db_index=True
     )
 
     code = models.IntegerField(unique=True)
