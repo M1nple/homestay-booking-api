@@ -87,7 +87,7 @@ class HostRequest(models.Model):
         CANCELLED = 'CANCELLED'
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    status = models.CharField(max_length=20, choices=Status.choices)
+    status = models.CharField(max_length=20, choices=Status.choices, default= Status.PENDING, db_index=True)
 
     business_name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
@@ -98,13 +98,15 @@ class HostRequest(models.Model):
                                         null=True)
     reason = models.TextField(blank=True, null=True)
 
-
     reviewed_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name='reviewed_requests')
     reviewed_at = models.DateTimeField(null=True, blank=True)
     rejection_reason = models.TextField(blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.business_name
 
 
 class HostProfile(models.Model):

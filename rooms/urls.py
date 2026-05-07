@@ -21,10 +21,12 @@ urlpatterns = [
     path(
         'homestays/<int:homestay_id>/rooms/',
         room_list,
+        name='room-list',
     ),
 
     path(
         'homestays/<int:homestay_id>/rooms/<int:pk>/',
         room_detail,
+        name='room-detail',
     ),
 ]

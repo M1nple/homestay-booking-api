@@ -5,6 +5,8 @@ from homestays.serializer import HomestaySerializer, HomestayDetailSerializer,My
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.exceptions import PermissionDenied
+
 
 class HomestayViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated, IsHost]

@@ -33,6 +33,9 @@ class Homestay(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True, db_index=True)
 
+    def __str__(self):
+        return self.name
+
 class HomestayImage(models.Model):
     homestay = models.ForeignKey(Homestay, on_delete=models.CASCADE, related_name='images')
     image_url = models.ImageField(upload_to='homestay_images/',

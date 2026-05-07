@@ -30,4 +30,10 @@ class UserAdmin(BaseUserAdmin):
 
 
 admin.site.register(User, UserAdmin)
-admin.site.register(HostRequest)
+
+class HostRequestAdmin(admin.ModelAdmin):
+    list_display = ['id','business_name', 'user', 'status', 'created_at']
+    list_filter = ['status']
+    search_fields = ['user__email', 'user__full_name']
+
+admin.site.register(HostRequest, HostRequestAdmin)

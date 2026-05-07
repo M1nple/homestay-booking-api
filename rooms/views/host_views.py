@@ -1,9 +1,11 @@
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.exceptions import PermissionDenied
 from homestays.models import Homestay
 from rooms.models import Room
+
 
 from rooms.serializer import (
     CreateRoomSerializer,
@@ -24,7 +26,9 @@ class RoomViewSet(ModelViewSet):
 
         return Room.objects.filter(
             homestay_id=self.kwargs['homestay_id'],
-            deleted_at__isnull=True
+            deleted_at__isnull=True,
+            homestay__deleted_at__isnull=True,
+            homestay__owner=self.request.user
         )
 
     # =========================
@@ -35,13 +39,13 @@ class RoomViewSet(ModelViewSet):
         if self.action == 'create':
             return CreateRoomSerializer
 
-        # elif self.action in ['update', 'partial_update']:
-        #     return UpdateRoomSerializer
+        elif self.action in ['update', 'partial_update']:
+            return UpdateRoomSerializer
 
-        # elif self.action == 'retrieve':
-        #     return RoomDetailSerializer
+        elif self.action == 'retrieve':
+            return RoomDetailSerializer
 
-        # return RoomListSerializer
+        return RoomListSerializer
 
     # =========================
     # CREATE ROOM
@@ -49,7 +53,7 @@ class RoomViewSet(ModelViewSet):
     def perform_create(self, serializer):
 
         homestay = get_object_or_404(
-            Homestay,
+            Homestay, 
             id=self.kwargs['homestay_id'],
             deleted_at__isnull=True
         )
@@ -62,3 +66,25 @@ class RoomViewSet(ModelViewSet):
             )
 
         serializer.save(homestay=homestay)
+
+    # =========================
+    # UPDATE ROOM   
+    # =========================
+    def perform_update(self, serializer):
+
+        room = self.get_object()
+
+        # optional:
+        # check owner permission
+        if room.homestay.owner != self.request.user:
+            raise PermissionDenied(
+                "Bạn không có quyền cập nhật phòng này"
+            )
+        serializer.save()
+    
+    # =========================
+    # DELETE ROOM   
+    # =========================
+    def perform_destroy(self, instance):
+        instance.deleted_at = timezone.now()
+        instance.save()

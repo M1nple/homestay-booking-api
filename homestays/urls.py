@@ -8,7 +8,9 @@ from rest_framework.routers import DefaultRouter
 host_router = DefaultRouter()
 host_router.register(r'homestays', HomestayViewSet, basename='host-homestay')
 
+# host_router.urls
+
 urlpatterns = [
     # Đường dẫn cho host quản lý homestay
-    path('host/', include(host_router.urls)),
+    path('', include(host_router.urls)),
 ]

@@ -131,7 +131,6 @@ class UpdateHomestaySerializer(serializers.ModelSerializer):
                 )
         return instance
 
-
 class HomestayDetailSerializer(serializers.ModelSerializer):
     province_name = serializers.CharField(
         source='province.name',
@@ -145,6 +144,11 @@ class HomestayDetailSerializer(serializers.ModelSerializer):
 
     ward_name = serializers.CharField(
         source='ward.name',
+        read_only=True
+    )
+
+    images = HomestayImageSerializer(
+        many=True,
         read_only=True
     )
 
@@ -165,4 +169,5 @@ class HomestayDetailSerializer(serializers.ModelSerializer):
             'province_name',
             'district_name',
             'ward_name',
+            'images'
         ]
