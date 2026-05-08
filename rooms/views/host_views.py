@@ -1,10 +1,12 @@
-from django.shortcuts import get_object_or_404
+# from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from rest_framework.generics import get_object_or_404
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
 from homestays.models import Homestay
 from rooms.models import Room
+from users.permissions import IsHost
 
 
 from rooms.serializer import (
@@ -17,7 +19,7 @@ from rooms.serializer import (
 
 class RoomViewSet(ModelViewSet):
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsHost]
 
     # =========================
     # QUERYSET
