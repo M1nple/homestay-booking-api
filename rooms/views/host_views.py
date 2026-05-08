@@ -9,7 +9,7 @@ from rooms.models import Room
 from users.permissions import IsHost
 
 
-from rooms.serializer import (
+from rooms.serializers.host_serializers import (
     CreateRoomSerializer,
     UpdateRoomSerializer,
     RoomListSerializer,

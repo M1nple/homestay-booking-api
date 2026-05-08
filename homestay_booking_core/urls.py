@@ -20,21 +20,29 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, Sp
 
 
 urlpatterns = [
-    # Admin site
+# Admin site
     path('admin/', admin.site.urls),
 
-    # API swagger documentation
+# API swagger documentation (docs)
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema')),
     path('api/redoc/', SpectacularRedocView.as_view(url_name='schema')),
 
-    # API endpoints
+# API endpoints
+
+    #auth API endpoints
     path('api/auth/', include('users.urls')), # thêm đường dẫn cho app users
+
+    # locations API endpoints
     path('api/locations/', include('locations.urls')), # thêm đường dẫn cho app locations
 
-    path('api/host/', include('homestays.urls')), # thêm đường dẫn cho app homestays
-    path('api/host/', include('rooms.urls')), # thêm đường dẫn cho app rooms
-
+    # host API endpoints
+    path('api/host/', include('homestays.urls.host_urls')), # thêm đường dẫn cho app homestays
+    path('api/host/', include('rooms.urls.host_urls')), # thêm đường dẫn cho app rooms
+    
+    # customer API endpoints
+    path('api/', include('homestays.urls.public_urls')), # thêm đường dẫn cho app homestays
     path('api/customer/', include('bookings.urls')), # thêm đường dẫn cho app bookings
+    path('api/', include('rooms.urls.public_urls')), # thêm đường dẫn cho app rooms
 ]
 

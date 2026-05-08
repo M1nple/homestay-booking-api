@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Homestay, HomestayImage
+from ..models import Homestay, HomestayImage
 
 class HomestaySerializer(serializers.ModelSerializer):
 

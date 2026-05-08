@@ -1,6 +1,6 @@
 from django.urls import path, include
-from .views.host.homestay_views import HomestayViewSet
-from .views.public.homestay_views import PublicHomestayViewSet
+from ..views.host.homestay_views import HomestayViewSet
+from ..views.public.homestay_views import PublicHomestayViewSet
 
 from rest_framework.routers import DefaultRouter
 
