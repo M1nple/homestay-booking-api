@@ -31,6 +31,7 @@ class PublicHomestaySerializer(serializers.ModelSerializer):
     class Meta:
         model = Homestay
         fields = [
+                'id',
                 'name', 
                 'address', 
                 'description', 

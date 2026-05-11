@@ -39,10 +39,11 @@ urlpatterns = [
     # host API endpoints
     path('api/host/', include('homestays.urls.host_urls')), # thêm đường dẫn cho app homestays
     path('api/host/', include('rooms.urls.host_urls')), # thêm đường dẫn cho app rooms
+    path('api/host/', include('bookings.urls.host_urls')), # thêm đường dẫn cho app bookings
     
     # customer API endpoints
     path('api/', include('homestays.urls.public_urls')), # thêm đường dẫn cho app homestays
-    path('api/customer/', include('bookings.urls')), # thêm đường dẫn cho app bookings
     path('api/', include('rooms.urls.public_urls')), # thêm đường dẫn cho app rooms
+    path('api/customer/', include('bookings.urls.customer_urls')), # thêm đường dẫn cho app bookings
 ]
 
