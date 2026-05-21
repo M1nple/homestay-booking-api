@@ -4,14 +4,14 @@ from rest_framework.routers import DefaultRouter
 from homestays.views.public.homestay_views import PublicHomestayViewSet
 
 
-router = DefaultRouter()
+public_router = DefaultRouter()
 
-router.register(
+public_router.register(
     r'homestays',
     PublicHomestayViewSet,
     basename='public-homestay'
 )
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('', include(public_router.urls)),
 ]

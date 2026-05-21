@@ -50,6 +50,7 @@ INSTALLED_APPS = [
 
     # rest framework
     'rest_framework',
+    'django_filters',
 
     # jwt
     'rest_framework_simplejwt',
@@ -58,6 +59,9 @@ INSTALLED_APPS = [
     #cloudinary
     'cloudinary',
     'cloudinary_storage',
+
+    # CORS
+    'corsheaders',
 
     # ===========apps============
     'users',
@@ -76,6 +80,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
 ROOT_URLCONF = 'homestay_booking_core.urls'
@@ -174,6 +180,12 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+        'rest_framework.filters.SearchFilter',
+        'rest_framework.filters.OrderingFilter',
+    ]
 }
 
 
@@ -218,3 +230,11 @@ CLOUDINARY_STORAGE = {
 }
 # sử dụng Cloudinary để lưu trữ ảnh, đặt DEFAULT_FILE_STORAGE thành MediaCloudinaryStorage
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+# cho phép tất cả các nguồn gốc truy cập API (CORS) 
+# CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0.1:5500",
+    "http://localhost:5500",
+]

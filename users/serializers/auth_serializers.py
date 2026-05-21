@@ -1,6 +1,6 @@
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import serializers
-from .models import User, HostRequest, HostProfile
+from ..models import User, HostRequest, HostProfile
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True)
@@ -48,3 +48,27 @@ class HostRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = HostRequest
         fields = ['business_name', 'description', 'identity_number', 'identity_image', 'reason']
+
+        def validate(self, data):
+
+            user = self.context['request'].user
+
+            if HostRequest.objects.filter(
+                user=user,
+                status=HostRequest.Status.PENDING
+            ).exists():
+
+                raise serializers.ValidationError(
+                    "Bạn đã gửi yêu cầu trước đó."
+                )
+
+            if HostRequest.objects.filter(
+                user=user,
+                status=HostRequest.Status.APPROVED
+            ).exists():
+
+                raise serializers.ValidationError(
+                    "Bạn đã là host."
+                )
+
+            return data

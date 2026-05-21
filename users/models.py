@@ -96,11 +96,11 @@ class HostRequest(models.Model):
                                         storage=MediaCloudinaryStorage(),
                                         blank=True, 
                                         null=True)
-    reason = models.TextField(blank=True, null=True)
+    reason = models.TextField(blank=True, null=True) # bỏ
 
-    reviewed_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name='reviewed_requests')
-    reviewed_at = models.DateTimeField(null=True, blank=True)
-    rejection_reason = models.TextField(blank=True, null=True)
+    reviewed_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name='reviewed_requests')# bỏ
+    reviewed_at = models.DateTimeField(null=True, blank=True) # bỏ
+    rejection_reason = models.TextField(blank=True, null=True)# bỏ
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -35,6 +35,14 @@ class HomestaySerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("xã phường không thuộc quận huyện.")
         return data
     
+
+    # def validate_name(self, value): 
+    #     if len(value) < 5:
+    #         raise serializers.ValidationError(
+    #             "Tên homestay quá ngắn"
+    #         )
+    #     return value
+    
     def create(self, validated_data):
         images = validated_data.pop('images', [])
         homestay = Homestay.objects.create(**validated_data)

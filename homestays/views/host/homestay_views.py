@@ -18,7 +18,6 @@ class HomestayViewSet(ModelViewSet):
         user = self.request.user
         return Homestay.objects.filter(owner=user, deleted_at__isnull=True)
         
-    
     def get_serializer_class(self):
 
         if self.action == 'create':
@@ -40,7 +39,6 @@ class HomestayViewSet(ModelViewSet):
         homestay = self.get_object()
         if homestay.owner != self.request.user:
             raise PermissionDenied("Bạn không có quyền sửa homestay này")
-
         serializer.save()
 
     def perform_destroy(self, instance):
