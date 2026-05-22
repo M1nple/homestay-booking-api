@@ -10,6 +10,7 @@ class Booking(models.Model):
         CANCELLED = 'CANCELLED'
         COMPLETED = 'COMPLETED'
         REJECTED = 'REJECTED'
+        PENDING_PAYMENT = 'PENDING_PAYMENT'
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     homestay = models.ForeignKey(Homestay, on_delete=models.CASCADE)
@@ -36,7 +37,7 @@ class Booking(models.Model):
 
 
 class BookingRoom(models.Model):
-    booking = models.ForeignKey(Booking, on_delete=models.CASCADE, related_name='rooms')
+    booking = models.ForeignKey(Booking, on_delete=models.CASCADE, related_name='booking_rooms')
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=15, decimal_places=2)
 

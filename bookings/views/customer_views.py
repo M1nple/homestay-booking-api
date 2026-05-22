@@ -26,9 +26,16 @@ class CustomerBookingViewSet(
 
     def get_queryset(self):
 
-        return Booking.objects.filter(
+        queryset = Booking.objects.filter(
             user=self.request.user
         ).order_by('-created_at')
+
+        status = self.request.query_params.get('status')
+
+        if status:
+            queryset = queryset.filter(status=status)
+
+        return queryset
 
     def get_serializer_class(self):
         if self.action == 'create':

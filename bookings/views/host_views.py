@@ -33,7 +33,6 @@ class HostBookingViewSet(
         status = self.request.query_params.get('status')
 
         if status:
-
             queryset = queryset.filter(
                 status=status
             )

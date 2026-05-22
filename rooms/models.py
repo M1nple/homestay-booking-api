@@ -1,6 +1,7 @@
 from django.db import models
 from homestays.models import Homestay
 from cloudinary_storage.storage import MediaCloudinaryStorage
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 # Create your models here.
@@ -14,8 +15,12 @@ class Room(models.Model):
 
     homestay = models.ForeignKey(Homestay, on_delete=models.CASCADE, related_name='rooms')
     name = models.CharField(max_length=255)
-    price = models.DecimalField(max_digits=15, decimal_places=2, db_index=True)
-    capacity = models.IntegerField()
+    price = models.DecimalField(max_digits=15, decimal_places=0, db_index=True)
+    capacity = models.PositiveIntegerField(
+        validators=[
+            MinValueValidator(1), 
+            MaxValueValidator(10)
+            ], db_index=True)
     status = models.CharField(max_length=20, choices=Status.choices, db_index=True)
     description = models.TextField(blank=True, null=True)
 
@@ -32,3 +37,18 @@ class RoomImage(models.Model):
     image_url = models.ImageField(upload_to='room_images/', storage=MediaCloudinaryStorage(), blank=True, null=True)
     is_primary = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+# =====================
+# Amenities
+# =====================
+class Amenity(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+
+
+class RoomAmenity(models.Model):
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name='room_amenities')
+    amenity = models.ForeignKey(Amenity, on_delete=models.CASCADE, related_name='amenity_rooms')
+
+    class Meta:
+        unique_together = ('room', 'amenity')
