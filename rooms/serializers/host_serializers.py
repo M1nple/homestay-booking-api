@@ -1,45 +1,69 @@
 from rest_framework import serializers
-from ..models import Room, RoomImage
+
+from rooms.serializers.amenity_serializers import AmenitySerializer
+from ..models import Room, RoomImage, Amenity
+
 
 class CreateRoomSerializer(serializers.ModelSerializer):
 
-    # custom serializer field vì model không có trường images, 
-    # nên phải tạo thủ công để lấy dữ liệu ảnh từ model RoomImage thông qua related_name 'images'
     images = serializers.ListField(
         child=serializers.ImageField(),
         write_only=True,
         required=False
-        )
-    
+    )
+    amenity_ids = serializers.PrimaryKeyRelatedField(
+        queryset= Amenity.objects.all(),
+        many=True,
+        write_only=True,
+        source='amenities'
+    )
+
     class Meta:
         model = Room
         fields = [
-                'name', 
-                'price', 
-                'capacity', 
-                'status', 
-                'description',
-                'images'
-                ]
+            'name',
+            'price',
+            'capacity',
+            'status',
+            'description',
+            'images',
+            'amenity_ids'
+        ]
 
     def validate(self, data):
+
         price = data.get('price')
         capacity = data.get('capacity')
 
         if price is not None and price < 0:
-            raise serializers.ValidationError("Giá phòng phải lớn hơn 0.")
+            raise serializers.ValidationError(
+                "Giá phòng phải lớn hơn 0."
+            )
+
         if capacity is not None and capacity <= 0:
-            raise serializers.ValidationError("số khách phải lớn hơn 1.")
-        return data   
+            raise serializers.ValidationError(
+                "Số khách phải lớn hơn 0."
+            )
+
+        return data
 
     def create(self, validated_data):
+
         images = validated_data.pop('images', [])
+
+        amenities = validated_data.pop('amenities', [])
+
         room = Room.objects.create(**validated_data)
+
+        room.amenities.set(amenities)
+
         for image in images:
+
             RoomImage.objects.create(
                 room=room,
                 image_url=image
             )
+
         return room
     
 class RoomImageSerializer(serializers.ModelSerializer):
@@ -55,6 +79,15 @@ class UpdateRoomSerializer(serializers.ModelSerializer):
         write_only=True,
         required=False
     )
+
+    amenity_ids = serializers.PrimaryKeyRelatedField(
+        queryset= Amenity.objects.all(),
+        many=True,
+        write_only=True,
+        source='amenities'
+    )
+
+
     class Meta:
         model = Room
         fields = [
@@ -64,6 +97,7 @@ class UpdateRoomSerializer(serializers.ModelSerializer):
                 'status', 
                 'description',
                 'images',
+                'amenity_ids',
                 ]
 
     def validate(self, data):
@@ -99,6 +133,10 @@ class UpdateRoomSerializer(serializers.ModelSerializer):
 class RoomListSerializer(serializers.ModelSerializer):
     images = RoomImageSerializer(many=True, read_only=True)
 
+    amenities = AmenitySerializer(
+        many=True,
+        read_only=True
+    )
     class Meta:
         model = Room
         fields = [
@@ -109,11 +147,16 @@ class RoomListSerializer(serializers.ModelSerializer):
             'status',
             'description',
             'deleted_at',
-            'images'
+            'images',
+            'amenities',
         ]
     
 class RoomDetailSerializer(serializers.ModelSerializer):
     images = RoomImageSerializer(many=True, read_only=True)
+    amenities = AmenitySerializer(
+        many=True,
+        read_only=True
+    )
 
     class Meta:
         model = Room
@@ -125,7 +168,8 @@ class RoomDetailSerializer(serializers.ModelSerializer):
             'status',
             'description',
             'deleted_at',
-            'images'
+            'images',
+            'amenities',
         ]
 
     

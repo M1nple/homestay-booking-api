@@ -28,6 +28,9 @@ class Room(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True, db_index=True)
 
+    amenities = models.ManyToManyField('Amenity',through='RoomAmenity',blank=True,related_name='rooms'
+)
+
     def __str__(self):  
         return self.name
 
