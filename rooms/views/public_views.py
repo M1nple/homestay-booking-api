@@ -17,7 +17,7 @@ class PublicRoomViewSet(ReadOnlyModelViewSet): # ReadOnlyModelViewSet Chỉ cho 
 
     search_fields = ["homestay__name", "province__name", "district__name", "ward__name"] 
 
-    filterset_fields = ['capacity']
+    filterset_fields = ['capacity', 'homestay']
 
     ordering_fields = ["price"]
 

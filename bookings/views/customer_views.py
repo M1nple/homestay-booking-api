@@ -48,6 +48,7 @@ class CustomerBookingViewSet(
 
         return BookingSerializer
 
+
     @action(detail=True, methods=['patch'])
     def cancel(self, request, pk=None):
 

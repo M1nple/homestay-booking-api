@@ -49,5 +49,8 @@ urlpatterns = [
     path('api/', include('rooms.urls.public_urls')), # thêm đường dẫn cho app rooms
     path('api/customer/', include('bookings.urls.customer_urls')), # thêm đường dẫn cho app bookings
     path('api/customer/', include('users.urls.customer_urls')), # thêm đường dẫn cho app users
+
+    # payment API endpoints
+    path('api/payments/', include('payments.urls')), # thêm đường dẫn cho app payments
 ]
 

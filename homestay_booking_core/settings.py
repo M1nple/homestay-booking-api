@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     'homestays',
     'rooms',
     'bookings',
+    'payments',
 
 ]
 
@@ -149,6 +150,8 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
+
+TIME_ZONE = 'Asia/Ho_Chi_Minh'
 
 
 # Static files (CSS, JavaScript, Images)
@@ -238,3 +241,18 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5500",
     "http://localhost:5500",
 ]
+
+
+# =========================
+
+# VNPay Configuration 
+
+# =========================
+
+VNPAY_TMN_CODE = os.getenv('VNPAY_TMN_CODE')
+
+VNPAY_HASH_SECRET_KEY = os.getenv('VNPAY_HASH_SECRET_KEY')
+
+VNPAY_PAYMENT_URL = os.getenv('VNPAY_PAYMENT_URL')
+
+VNPAY_RETURN_URL = os.getenv('VNPAY_RETURN_URL')

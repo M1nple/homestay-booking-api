@@ -37,7 +37,7 @@ class Booking(models.Model):
 
 
 class BookingRoom(models.Model):
-    booking = models.ForeignKey(Booking, on_delete=models.CASCADE, related_name='booking_rooms')
+    booking = models.ForeignKey(Booking, on_delete=models.CASCADE, related_name='rooms')
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=15, decimal_places=2)
 

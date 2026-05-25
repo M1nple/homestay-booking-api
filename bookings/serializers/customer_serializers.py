@@ -158,7 +158,6 @@ class CreateBookingSerializer(serializers.ModelSerializer):
 class BookingDetailSerializer(serializers.ModelSerializer):
 
     rooms = BookingRoomSerializer(
-        source='bookingroom_set',
         many=True,
         read_only=True
     )
@@ -169,7 +168,7 @@ class BookingDetailSerializer(serializers.ModelSerializer):
     )
 
     user_name = serializers.CharField(
-        source='user.username',
+        source='user.email',
         read_only=True
     )
     class Meta:

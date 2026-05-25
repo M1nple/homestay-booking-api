@@ -18,5 +18,6 @@ class PublicRoomSerializer(serializers.ModelSerializer):
             'price',
             'capacity',
             'description',
-            'images'
+            'images',
+            'homestay',
         ]
