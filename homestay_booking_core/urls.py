@@ -51,6 +51,7 @@ urlpatterns = [
     path('api/customer/', include('users.urls.customer_urls')), # thêm đường dẫn cho app users
 
     # payment API endpoints
-    path('api/payments/', include('payments.urls')), # thêm đường dẫn cho app payments
+    path('api/payments/', include('payments.urls.payment_urls')), # thêm đường dẫn cho app payments
+    path('api/customer/', include('payments.urls.customer_urls')), # thêm đường dẫn cho app payments
 ]
 
