@@ -1,6 +1,9 @@
+from datetime import timedelta
+from django.utils import timezone
 from rest_framework import serializers
 from bookings.models import Booking, BookingRoom
 from rooms.models import Room
+from homestays.models import Homestay
 
 class BookingRoomInputSerializer(serializers.Serializer):
 
@@ -50,7 +53,7 @@ class BookingSerializer(serializers.ModelSerializer):
             'total_guests',
             'total_price',
             'status',
-            'rooms'
+            'rooms',
         ]
 
 class CreateBookingSerializer(serializers.ModelSerializer):
@@ -133,6 +136,7 @@ class CreateBookingSerializer(serializers.ModelSerializer):
         booking = Booking.objects.create(
             user=user,
             total_price=0,
+            expired_at=timezone.now() + timedelta(minutes=15),
             **validated_data
         )
 
@@ -182,5 +186,8 @@ class BookingDetailSerializer(serializers.ModelSerializer):
             'total_guests',
             'total_price',
             'status',
-            'rooms'
+            'rooms',
+            'created_at',
+            'expired_at'
+
         ]
