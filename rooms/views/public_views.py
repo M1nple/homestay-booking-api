@@ -6,7 +6,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from rooms.models import Room
-from rooms.serializers.public_serializers import PublicRoomSerializer
+from rooms.serializers.public_serializers import PublicRoomDetailSerializer, PublicRoomSerializer
 
 class PublicRoomViewSet(ReadOnlyModelViewSet): # ReadOnlyModelViewSet Chỉ cho phép xem danh sách và chi tiết phòng, không cho phép tạo, cập nhật hoặc xóa
     queryset = Room.objects.filter(deleted_at__isnull=True)
@@ -39,3 +39,12 @@ class PublicRoomViewSet(ReadOnlyModelViewSet): # ReadOnlyModelViewSet Chỉ cho 
             return self.queryset.filter(price__lte=max_price) # Lọc phòng có giá thấp nhất nhỏ hơn hoặc bằng giá tối đa
 
         return queryset.distinct() # distinct loại bỏ dữ liệu trùng lặp Tránh trùng lặp phòng khi có nhiều phòng cùng giá thấp nhất trong một homestay
+    
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return PublicRoomSerializer
+
+        elif self.action == 'retrieve':
+            return PublicRoomDetailSerializer
+
+        return PublicRoomSerializer

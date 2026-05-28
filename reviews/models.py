@@ -3,6 +3,8 @@ from django.core.validators import (MinValueValidator,MaxValueValidator)
 from users.models import User
 from rooms.models import Room
 from bookings.models import Booking
+from cloudinary_storage.storage import MediaCloudinaryStorage
+
 
 
 # =====================
@@ -81,8 +83,7 @@ class ReviewImage(models.Model):
     )
 
     image_url = models.ImageField(
-        upload_to='reviews/'
-    )
+        upload_to='reviews/', storage=MediaCloudinaryStorage(),blank=True,null=True)
 
     created_at = models.DateTimeField(
         auto_now_add=True

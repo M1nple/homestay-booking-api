@@ -179,6 +179,7 @@ class RoomDetailSerializer(serializers.ModelSerializer):
             'deleted_at',
             'images',
             'amenities',
+            'avg_rating',
         ]
 
     def get_avg_rating(self, obj):
