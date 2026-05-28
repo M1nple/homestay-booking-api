@@ -53,5 +53,8 @@ urlpatterns = [
     # payment API endpoints
     path('api/payments/', include('payments.urls.payment_urls')), # thêm đường dẫn cho app payments
     path('api/customer/', include('payments.urls.customer_urls')), # thêm đường dẫn cho app payments
+
+    # review API endpoints
+    path('api/reviews/', include('reviews.urls')), # thêm đường dẫn cho app reviews
 ]
 

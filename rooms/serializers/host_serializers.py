@@ -1,5 +1,5 @@
 from rest_framework import serializers
-
+from django.db.models import Avg
 from rooms.serializers.amenity_serializers import AmenitySerializer
 from ..models import Room, RoomImage, Amenity
 
@@ -137,6 +137,8 @@ class RoomListSerializer(serializers.ModelSerializer):
         many=True,
         read_only=True
     )
+
+    avg_rating = serializers.SerializerMethodField()
     class Meta:
         model = Room
         fields = [
@@ -149,7 +151,13 @@ class RoomListSerializer(serializers.ModelSerializer):
             'deleted_at',
             'images',
             'amenities',
+            'avg_rating',
         ]
+    def get_avg_rating(self, obj):
+
+        return obj.reviews.aggregate(
+            avg=Avg('rating')
+        )['avg']
     
 class RoomDetailSerializer(serializers.ModelSerializer):
     images = RoomImageSerializer(many=True, read_only=True)
@@ -157,6 +165,7 @@ class RoomDetailSerializer(serializers.ModelSerializer):
         many=True,
         read_only=True
     )
+    avg_rating = serializers.SerializerMethodField()
 
     class Meta:
         model = Room
@@ -172,4 +181,8 @@ class RoomDetailSerializer(serializers.ModelSerializer):
             'amenities',
         ]
 
-    
+    def get_avg_rating(self, obj):
+
+        return obj.reviews.aggregate(
+            avg=Avg('rating')
+        )['avg']
