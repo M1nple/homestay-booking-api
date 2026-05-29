@@ -13,3 +13,4 @@ drf-spectacular
 cloudinary django-cloudinary-storage
 django-filter
 pytz
+python-decouple

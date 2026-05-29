@@ -1,6 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from cloudinary_storage.storage import MediaCloudinaryStorage
+from django.utils import timezone
+from datetime import timedelta
+
+
 
 # =====================
 # User Manager
@@ -59,6 +63,10 @@ class User(AbstractUser):
                                     storage=MediaCloudinaryStorage(),
                                     blank=True, 
                                     null=True)
+
+    is_verified = models.BooleanField(
+        default=False
+    )
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -138,3 +146,30 @@ class HostProfile(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+
+class EmailOTP(models.Model):
+
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='email_otps'
+    )
+
+    otp_code = models.CharField(
+        max_length=6
+    )
+
+    expired_at = models.DateTimeField()
+
+    is_used = models.BooleanField(
+        default=False
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    def is_expired(self):
+
+        return timezone.now() > self.expired_at

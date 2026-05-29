@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 from datetime import timedelta
 from dotenv import load_dotenv
+from decouple import config
 
 load_dotenv()
 
@@ -257,3 +258,35 @@ VNPAY_HASH_SECRET_KEY = os.getenv('VNPAY_HASH_SECRET_KEY')
 VNPAY_PAYMENT_URL = os.getenv('VNPAY_PAYMENT_URL')
 
 VNPAY_RETURN_URL = os.getenv('VNPAY_RETURN_URL')
+
+# =========================
+
+# send otp email configuration
+
+# =========================
+
+EMAIL_BACKEND = (
+    'django.core.mail.backends.console.EmailBackend' # hiện thị email trong console (dùng cho phát triển, không gửi email thực tế)
+)
+
+
+# =========================
+
+#  send mail otp
+
+# =========================
+EMAIL_BACKEND = (
+    'django.core.mail.backends.smtp.EmailBackend'
+)
+
+EMAIL_HOST = 'smtp.gmail.com'
+
+EMAIL_PORT = '587'
+
+EMAIL_USE_TLS = True
+
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')
