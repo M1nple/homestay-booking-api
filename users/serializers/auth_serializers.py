@@ -2,6 +2,10 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import serializers
 from ..models import User, HostRequest, HostProfile
 from users.utils import generate_and_send_otp
+from django.contrib.auth.password_validation import validate_password
+import re
+
+from django.core.exceptions import ValidationError as DjangoValidationError
 
 # class RegisterSerializer(serializers.ModelSerializer):
 #     password = serializers.CharField(write_only=True, required=True)
@@ -20,6 +24,9 @@ from users.utils import generate_and_send_otp
 #         return user
 
 class RegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(
+        write_only=True
+    )
     class Meta:
         model = User
         fields = [
@@ -28,11 +35,11 @@ class RegisterSerializer(serializers.ModelSerializer):
             'password',
             'phone',
         ]
-        extra_kwargs = {
-            'password': {
-                'write_only': True
-            }
-        }
+        # extra_kwargs = {
+        #     'password': {
+        #         'write_only': True
+        #     }
+        # }
     def validate_email(self, value):
         email = value.lower()
         verified_user = User.objects.filter(
@@ -44,6 +51,33 @@ class RegisterSerializer(serializers.ModelSerializer):
                 'Email đã tồn tại.'
             )
         return email
+    
+    def validate_password(self, value):
+
+        # try:
+        #     validate_password(value)
+
+        # except DjangoValidationError as e:
+        #     raise serializers.ValidationError(e.messages)
+
+        if len(value) < 8:
+            raise serializers.ValidationError(
+                'Mật khẩu phải có ít nhất 8 ký tự.'
+            )
+        if not re.search(r'[A-Z]', value):
+            raise serializers.ValidationError(
+                'Mật khẩu phải chứa ít nhất 1 chữ hoa.'
+            )
+        if not re.search(r'[a-z]', value):
+            raise serializers.ValidationError(
+                'Mật khẩu phải chứa ít nhất 1 chữ thường.'
+            )
+        if not re.search(r'\d', value):
+            raise serializers.ValidationError(
+                'Mật khẩu phải chứa ít nhất 1 chữ số.'
+            )
+        return value
+    
     def create(self, validated_data):
         email = validated_data['email']
         existing_user = User.objects.filter(

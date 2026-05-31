@@ -5,7 +5,7 @@ from .models import User, HostRequest, HostProfile
 
 class UserAdmin(BaseUserAdmin):
     ordering = ['email']
-    list_display = ['email', 'full_name', 'role', 'is_staff', 'is_active']
+    list_display = ['email', 'full_name', 'role', 'is_staff', 'is_active', 'is_verified']
     list_filter = ['role', 'is_staff', 'is_active']
 
     search_fields = ['email', 'full_name', 'phone']
@@ -14,7 +14,7 @@ class UserAdmin(BaseUserAdmin):
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
         ('Thông tin cá nhân', {'fields': ('full_name', 'phone', 'avatar_url')}),
-        ('Phân quyền', {'fields': ('role', 'is_staff', 'is_superuser', 'is_active')}),
+        ('Phân quyền', {'fields': ('role', 'is_staff', 'is_superuser', 'is_active', 'is_verified')}),
         ('Thời gian', {'fields': ('last_login',)}),
     )
 
