@@ -6,7 +6,7 @@ import urllib.parse
 from django.conf import settings
 from django.db import transaction
 from django.utils import timezone
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -116,43 +116,31 @@ class VNPayReturnView(APIView):
 
     @transaction.atomic
     def get(self, request):
-
         input_data = request.GET.dict()
-
         secure_hash = input_data.pop(
             'vnp_SecureHash',
             None
         )
-
         if not secure_hash:
-
             return Response({
                 'message': 'Missing secure hash'
             }, status=400)
-
         input_data.pop(
             'vnp_SecureHashType',
             None
         )
-
         sorted_data = sorted(
             input_data.items()
         )
-
         query_string = urllib.parse.urlencode(
             sorted_data
         )
-
         hash_value = hmac.new(
-
             settings.VNPAY_HASH_SECRET_KEY.encode(),
-
             query_string.encode(),
-
             hashlib.sha512
-
         ).hexdigest()
-
+        
         # validate checksum
         if hash_value != secure_hash:
 
@@ -369,9 +357,15 @@ class VNPayReturnView(APIView):
 
             booking.save()
 
-            return Response({
-                'message': 'Payment success'
-            })
+            # return Response({
+            #     'message': 'Payment success'
+            # })
+
+            return redirect(
+                f"http://127.0.0.1:5500/payment-result.html"
+                f"?status=success"
+                f"&booking={booking.id}"
+            )
 
         # =================================================
         # PAYMENT FAILED

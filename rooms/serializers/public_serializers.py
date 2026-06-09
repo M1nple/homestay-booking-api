@@ -1,4 +1,7 @@
 from rest_framework import serializers
+from rest_framework.generics import ListAPIView
+
+from bookings.models import Booking, BookingRoom
 from ..models import Room, RoomImage
 from django.db.models import Avg
 from reviews.serializers.review_serializers import ReviewSerializer
@@ -51,6 +54,7 @@ class PublicRoomDetailSerializer(serializers.ModelSerializer):
             'description',
             'images',
             'homestay',
+            'amenities',
             'avg_rating',
             'reviews'
         ]
@@ -59,3 +63,44 @@ class PublicRoomDetailSerializer(serializers.ModelSerializer):
         return obj.reviews.aggregate(
             avg=Avg('rating')
         )['avg']
+    
+
+    class AvailableRoomView(ListAPIView):
+
+        serializer_class = PublicRoomSerializer
+
+        def get_queryset(self):
+
+            homestay_id = self.request.query_params.get(
+                'homestay_id'
+            )
+
+            check_in = self.request.query_params.get(
+                'check_in'
+            )
+
+            check_out = self.request.query_params.get(
+                'check_out'
+            )
+
+            queryset = Room.objects.filter(
+                homestay_id=homestay_id,
+                deleted_at__isnull=True,
+                status=Room.Status.AVAILABLE
+            )
+
+            booked_rooms = BookingRoom.objects.filter(
+                booking__status__in=[
+                    Booking.Status.PENDING,
+                    Booking.Status.CONFIRMED
+                ],
+                booking__check_in__lt=check_out,
+                booking__check_out__gt=check_in
+            ).values_list(
+                'room_id',
+                flat=True
+            )
+
+            return queryset.exclude(
+                id__in=booked_rooms
+            )

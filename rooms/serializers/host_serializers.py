@@ -112,22 +112,35 @@ class UpdateRoomSerializer(serializers.ModelSerializer):
     
     def update(self, instance, validated_data):
 
-        images = validated_data.pop('images', None) # giải thích  
+        images = validated_data.pop('images', None)
 
-        #update các trường thông tin của phòng
+        amenities = validated_data.pop(
+            'amenities',
+            None
+        )
+
+        # update field thường
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
+
         instance.save()
-        # nếu có upload ảnh mới
+
+        # update many-to-many
+        if amenities is not None:
+            instance.amenities.set(amenities)
+
+        # update ảnh
         if images is not None:
-            # xóa ảnh cũ
+
             instance.images.all().delete()
-            # tạo ảnh mới
+
             for image in images:
+
                 RoomImage.objects.create(
                     room=instance,
                     image_url=image
                 )
+
         return instance
 
 class RoomListSerializer(serializers.ModelSerializer):
