@@ -39,26 +39,22 @@ class UserManager(BaseUserManager):
 
 # =====================
 # Custom User
-# =====================
+# =====================pp
 class User(AbstractUser):
     class Role(models.TextChoices):
         CUSTOMER = 'CUSTOMER'
         HOST = 'HOST'
         ADMIN = 'ADMIN'
-
     # xóa trường username mặc định của AbstractUser và thay thế bằng email làm trường đăng nhập chính
     username = None
-
     email = models.EmailField(unique=True)
     full_name = models.CharField(max_length=255)
     phone = models.CharField(max_length=20)
-
     role = models.CharField(
         max_length=10,
         choices=Role.choices,
         default=Role.CUSTOMER
     )
-
     avatar_url = models.ImageField( upload_to='avatars/',
                                     storage=MediaCloudinaryStorage(),
                                     blank=True, 
@@ -67,15 +63,11 @@ class User(AbstractUser):
     is_verified = models.BooleanField(
         default=False
     )
-
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
     objects = UserManager()
-
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
@@ -93,10 +85,11 @@ class HostRequest(models.Model):
         APPROVED = 'APPROVED'
         REJECTED = 'REJECTED'
         CANCELLED = 'CANCELLED'
-
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    status = models.CharField(max_length=20, choices=Status.choices, default= Status.PENDING, db_index=True)
-
+    status = models.CharField(max_length=20,
+                              choices=Status.choices, 
+                              default= Status.PENDING, 
+                              db_index=True)
     business_name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     identity_number = models.CharField(max_length=12)
@@ -104,12 +97,14 @@ class HostRequest(models.Model):
                                         storage=MediaCloudinaryStorage(),
                                         blank=True, 
                                         null=True)
-    reason = models.TextField(blank=True, null=True) # bỏ
-
-    reviewed_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name='reviewed_requests')# bỏ
-    reviewed_at = models.DateTimeField(null=True, blank=True) # bỏ
-    rejection_reason = models.TextField(blank=True, null=True)# bỏ
-
+    reason = models.TextField(blank=True, null=True)
+    reviewed_by = models.ForeignKey(User, 
+                                    null=True, 
+                                    blank=True, 
+                                    on_delete=models.SET_NULL, 
+                                    related_name='reviewed_requests')
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+    rejection_reason = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

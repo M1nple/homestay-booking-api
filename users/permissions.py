@@ -1,4 +1,3 @@
-from email import message
 from rest_framework.permissions import BasePermission
 
 # kiểm tra user có phải là admin hay không

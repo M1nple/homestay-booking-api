@@ -9,16 +9,15 @@ class Payment(models.Model):
         PENDING = 'PENDING'
         SUCCESS = 'SUCCESS'
         FAILED = 'FAILED'
-
     class Method(models.TextChoices):
         VNPAY = 'VNPAY'
         MOMO = 'MOMO'
-
     booking = models.OneToOneField(Booking, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=15, decimal_places=2)
     method = models.CharField(max_length=20, choices=Method.choices)
-    status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING)
-
+    status = models.CharField(max_length=20, 
+                              choices=Status.choices, 
+                              default=Status.PENDING)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

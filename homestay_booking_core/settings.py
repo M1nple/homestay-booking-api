@@ -183,6 +183,7 @@ AUTH_USER_MODEL = 'users.User' # thêm dòng này để sử dụng custom u
 # =========================
 
 # Cấu hình cho Django REST Framework
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',

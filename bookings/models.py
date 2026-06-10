@@ -11,34 +11,31 @@ class Booking(models.Model):
         COMPLETED = 'COMPLETED'
         REJECTED = 'REJECTED'
         PENDING_PAYMENT = 'PENDING_PAYMENT'
-
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     homestay = models.ForeignKey(Homestay, on_delete=models.CASCADE)
-
     check_in = models.DateField(db_index=True)
     check_out = models.DateField(db_index=True)
-
     total_guests = models.IntegerField()
     total_price = models.DecimalField(max_digits=15, decimal_places=2)
     status = models.CharField(max_length=20, 
                             choices=Status.choices, 
                             default=Status.PENDING,
-                            db_index=True
-                            )
-
+                            db_index=True)
     cancelled_at = models.DateTimeField(null=True, blank=True)
-    cancelled_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name='cancelled_bookings')
+    cancelled_by = models.ForeignKey(User, 
+                                     null=True, 
+                                     blank=True, 
+                                     on_delete=models.SET_NULL, 
+                                     related_name='cancelled_bookings')
     cancel_reason = models.TextField(null=True, blank=True)
     confirm_at = models.DateTimeField(null=True, blank=True)
     # rejected_at = models.DateTimeField(null=True, blank=True) theem sau
-
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     expired_at = models.DateTimeField(
                                     null=True,
                                     blank=True,
-                                    db_index=True
-                                    )
+                                    db_index=True)
 
 
 class BookingRoom(models.Model):

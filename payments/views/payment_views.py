@@ -24,11 +24,8 @@ from payments.utils import create_vnpay_payment_url
 # =====================================================
 
 class CreateVNPayPaymentView(APIView):
-
     permission_classes = [IsAuthenticated]
-
     def post(self, request, booking_id):
-
         booking = get_object_or_404(
             Booking,
             id=booking_id,
@@ -37,7 +34,6 @@ class CreateVNPayPaymentView(APIView):
 
         # booking phải pending
         if booking.status != Booking.Status.PENDING:
-
             raise ValidationError(
                 'Booking không hợp lệ để thanh toán.'
             )
@@ -48,58 +44,41 @@ class CreateVNPayPaymentView(APIView):
             and
             timezone.now() > booking.expired_at
         ):
-
             booking.status = Booking.Status.CANCELLED
-
             booking.cancelled_at = timezone.now()
-
             booking.cancel_reason = (
                 'Quá thời gian thanh toán'
             )
-
             booking.save()
-
             return Response({
                 'message': 'Booking đã hết hạn thanh toán.'
             }, status=400)
-
         payment, _ = Payment.objects.get_or_create(
-
             booking=booking,
 
             defaults={
-
                 'amount': booking.total_price,
-
                 'method': Payment.Method.VNPAY,
-
                 'status': Payment.Status.PENDING
             }
         )
 
         # đã thanh toán
         if payment.status == Payment.Status.SUCCESS:
-
             raise ValidationError(
                 'Booking này đã thanh toán.'
             )
 
         payment_attempt = PaymentAttempt.objects.create(
-
             payment=payment,
-
             amount=payment.amount,
-
             status=Payment.Status.PENDING,
-
             txn_ref=str(uuid.uuid4()).replace('-', '')[:20]
         )
-
         payment_url = create_vnpay_payment_url(
             request,
             payment_attempt
         )
-
         return Response({
             'payment_url': payment_url
         })
@@ -110,7 +89,6 @@ class CreateVNPayPaymentView(APIView):
 # =====================================================
 
 class VNPayReturnView(APIView):
-
     authentication_classes = []
     permission_classes = []
 
@@ -140,39 +118,29 @@ class VNPayReturnView(APIView):
             query_string.encode(),
             hashlib.sha512
         ).hexdigest()
-        
         # validate checksum
         if hash_value != secure_hash:
-
             return Response({
                 'message': 'Invalid checksum'
             }, status=400)
-
         txn_ref = input_data.get(
             'vnp_TxnRef'
         )
-
         response_code = input_data.get(
             'vnp_ResponseCode'
         )
-
         payment_attempt = (
             PaymentAttempt.objects
             .select_for_update()
             .get(txn_ref=txn_ref)
         )
-
         payment = payment_attempt.payment
-
         booking = payment.booking
-
         # callback duplicate
         if payment.status == Payment.Status.SUCCESS:
-
             return Response({
                 'message': 'Payment already confirmed'
             })
-
         # validate amount
         amount = int(
             input_data.get(
@@ -180,9 +148,7 @@ class VNPayReturnView(APIView):
                 0
             )
         )
-
         if amount != int(payment.amount * 100):
-
             return Response({
                 'message': 'Invalid amount'
             }, status=400)
@@ -193,31 +159,20 @@ class VNPayReturnView(APIView):
             and
             timezone.now() > booking.expired_at
         ):
-
             booking.status = Booking.Status.CANCELLED
-
             booking.cancelled_at = timezone.now()
-
             booking.cancel_reason = (
                 'Quá thời gian thanh toán'
             )
-
             booking.save()
-
             payment.status = Payment.Status.FAILED
-
             payment.save()
-
             payment_attempt.status = Payment.Status.FAILED
-
             payment_attempt.vnp_response_code = (
                 response_code
             )
-
             payment_attempt.pay_date = timezone.now()
-
             payment_attempt.save()
-
             return Response({
                 'message': (
                     'Booking đã hết thời gian thanh toán.'
@@ -232,135 +187,100 @@ class VNPayReturnView(APIView):
 
             # =============================================
             # CHECK OVERLAP
-            # =============================================
-
+            # ============================================
             booking_rooms = (
                 BookingRoom.objects.filter(
                     booking=booking
                 )
             )
-
             for booking_room in booking_rooms:
-
                 room = booking_room.room
-
                 conflict = (
                     BookingRoom.objects.filter(
-
                         room=room,
-
                         booking__status=(
                             Booking.Status.CONFIRMED
                         ),
-
                         booking__check_in__lt=(
                             booking.check_out
                         ),
-
                         booking__check_out__gt=(
                             booking.check_in
                         )
-
                     )
                     .exclude(
                         booking=booking
                     )
                     .exists()
                 )
-
                 if conflict:
-
                     booking.status = (
                         Booking.Status.CANCELLED
                     )
-
                     booking.cancelled_at = (
                         timezone.now()
                     )
-
                     booking.cancel_reason = (
                         'Phòng đã được đặt'
                     )
-
                     booking.save()
-
                     payment.status = (
                         Payment.Status.FAILED
                     )
-
                     payment.save()
-
                     payment_attempt.status = (
                         Payment.Status.FAILED
                     )
-
                     payment_attempt.vnp_response_code = (
                         response_code
                     )
-
                     payment_attempt.pay_date = (
                         timezone.now()
                     )
-
                     payment_attempt.save()
-
                     return Response({
                         'message': (
                             f'Phòng "{room.name}" '
                             'đã được đặt trước.'
                         )
                     }, status=400)
-
             # =============================================
             # CONFIRM PAYMENT
             # =============================================
-
             payment.status = (
                 Payment.Status.SUCCESS
             )
-
             payment.save()
-
             payment_attempt.status = (
                 Payment.Status.SUCCESS
             )
-
             payment_attempt.vnp_response_code = (
                 response_code
             )
-
             payment_attempt.vnp_transaction_no = (
                 input_data.get(
                     'vnp_TransactionNo'
                 )
             )
-
             payment_attempt.bank_code = (
                 input_data.get(
                     'vnp_BankCode'
                 )
             )
-
             payment_attempt.pay_date = (
                 timezone.now()
             )
-
             payment_attempt.save()
-
             booking.status = (
                 Booking.Status.CONFIRMED
             )
-
             booking.confirm_at = (
                 timezone.now()
             )
-
             booking.save()
-
             # return Response({
             #     'message': 'Payment success'
             # })
-
             return redirect(
                 f"http://127.0.0.1:5500/payment-result.html"
                 f"?status=success"
@@ -370,27 +290,20 @@ class VNPayReturnView(APIView):
         # =================================================
         # PAYMENT FAILED
         # =================================================
-
         payment.status = (
             Payment.Status.FAILED
         )
-
         payment.save()
-
         payment_attempt.status = (
             Payment.Status.FAILED
         )
-
         payment_attempt.vnp_response_code = (
             response_code
         )
-
         payment_attempt.pay_date = (
             timezone.now()
         )
-
         payment_attempt.save()
-
         return Response({
             'message': 'Payment failed'
         })
