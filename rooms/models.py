@@ -48,6 +48,9 @@ class RoomImage(models.Model):
 class Amenity(models.Model):
     name = models.CharField(max_length=255, unique=True)
 
+    def __str__(self):
+        return self.name
+
 
 class RoomAmenity(models.Model):
     room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name='room_amenities')

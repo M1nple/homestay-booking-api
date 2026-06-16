@@ -42,6 +42,12 @@ class PublicRoomDetailSerializer(serializers.ModelSerializer):
         read_only=True
     )
 
+    amenities_names = serializers.StringRelatedField(
+        source='amenities',
+        many=True,
+        read_only=True)
+    
+
     avg_rating = serializers.SerializerMethodField()
 
     class Meta:
@@ -55,6 +61,7 @@ class PublicRoomDetailSerializer(serializers.ModelSerializer):
             'images',
             'homestay',
             'amenities',
+            'amenities_names',
             'avg_rating',
             'reviews'
         ]

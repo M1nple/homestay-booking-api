@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'corsheaders',
 
     # ===========apps============
+    'admins',
     'users',
     'locations',
     'homestays',

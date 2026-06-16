@@ -32,6 +32,7 @@ urlpatterns = [
 
     #admin API endpointss
     path('api/admin/', include('users.urls.admin_urls')), # thêm đường dẫn cho app users
+    path('api/admin/', include('admins.urls')), # thêm đường dẫn cho app users
 
     #auth API endpoints
     path('api/auth/', include('users.urls.auth_urls')), # thêm đường dẫn cho app users
@@ -53,8 +54,12 @@ urlpatterns = [
     # payment API endpoints
     path('api/payments/', include('payments.urls.payment_urls')), # thêm đường dẫn cho app payments
     path('api/customer/', include('payments.urls.customer_urls')), # thêm đường dẫn cho app payments
+    path('api/host/', include('payments.urls.host_urls')), # thêm đường dẫn cho app payments
 
     # review API endpoints
     path('api/reviews/', include('reviews.urls')), # thêm đường dẫn cho app reviews
+
+    #amenity API endpoints
+    path('api/', include('rooms.urls.amenity_urls')), # thêm đường dẫn cho
 ]
 

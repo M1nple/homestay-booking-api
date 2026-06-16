@@ -161,7 +161,7 @@ class LogoutSerializer(serializers.Serializer):
 class HostRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = HostRequest
-        fields = ['business_name', 'description', 'identity_number', 'identity_image', 'reason']
+        fields = ['business_name', 'description', 'identity_number', 'identity_image', 'reason', 'status', 'created_at']
 
         def validate(self, data):
 

@@ -281,10 +281,13 @@ class VNPayReturnView(APIView):
             # return Response({
             #     'message': 'Payment success'
             # })
+            if response_code == "00":
+                return redirect(
+                    f"http://127.0.0.1:5500/payment-success.html?booking={booking.id}"
+                )
+
             return redirect(
-                f"http://127.0.0.1:5500/payment-result.html"
-                f"?status=success"
-                f"&booking={booking.id}"
+                f"http://127.0.0.1:5500/payment-failed.html?code={response_code}"
             )
 
         # =================================================
