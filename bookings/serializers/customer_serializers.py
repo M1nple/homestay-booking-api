@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta, date
 from django.utils import timezone
 from rest_framework import serializers
 from bookings.models import Booking, BookingRoom
@@ -80,6 +80,10 @@ class CreateBookingSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 "Ngày trả phòng phải sau ngày nhận phòng."
             )
+        if check_in and check_out and check_in <= date.today():
+            raise serializers.ValidationError(
+                "Ngày đặt phòng phải lớn hơn ngày hiện tại."
+            )        
         # validate guests
         if total_guests is not None and total_guests <= 0:
             raise serializers.ValidationError(

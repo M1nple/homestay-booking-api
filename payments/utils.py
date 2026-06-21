@@ -18,34 +18,22 @@ def create_vnpay_payment_url(request, payment_attempt):
 
     params = {
         'vnp_Version': '2.1.0',
-
         'vnp_Command': 'pay',
-
         'vnp_TmnCode': settings.VNPAY_TMN_CODE,
-
         'vnp_Amount': int(payment_attempt.amount * 100),
-
         'vnp_CurrCode': 'VND',
-
         'vnp_TxnRef': payment_attempt.txn_ref,
-
         'vnp_OrderInfo': (
             f'Thanh toan booking '
             f'{payment_attempt.payment.booking.id}'
         ),
-
         'vnp_OrderType': 'billpayment',
-
         'vnp_Locale': 'vn',
-
         'vnp_ReturnUrl': settings.VNPAY_RETURN_URL,
-
         'vnp_IpAddr': get_client_ip(request),
-
         'vnp_CreateDate': current_time.strftime(
             '%Y%m%d%H%M%S'
         ),
-
         'vnp_ExpireDate': (
             current_time + timedelta(minutes=15)
         ).strftime('%Y%m%d%H%M%S'),

@@ -95,24 +95,12 @@ class VNPayReturnView(APIView):
     @transaction.atomic
     def get(self, request):
         input_data = request.GET.dict()
-        secure_hash = input_data.pop(
-            'vnp_SecureHash',
-            None
-        )
+        secure_hash = input_data.pop('vnp_SecureHash',None)
         if not secure_hash:
-            return Response({
-                'message': 'Missing secure hash'
-            }, status=400)
-        input_data.pop(
-            'vnp_SecureHashType',
-            None
-        )
-        sorted_data = sorted(
-            input_data.items()
-        )
-        query_string = urllib.parse.urlencode(
-            sorted_data
-        )
+            return Response({'message': 'Missing secure hash'}, status=400)
+        input_data.pop('vnp_SecureHashType',None)
+        sorted_data = sorted(input_data.items())
+        query_string = urllib.parse.urlencode(sorted_data)
         hash_value = hmac.new(
             settings.VNPAY_HASH_SECRET_KEY.encode(),
             query_string.encode(),
