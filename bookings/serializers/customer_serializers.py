@@ -169,6 +169,9 @@ class BookingDetailSerializer(serializers.ModelSerializer):
             'status',
             'rooms',
             'created_at',
-            'expired_at'
+            'expired_at',
+            'request_refund_at',
+            'request_refund_by',
+            'refund_at',
 
         ]

@@ -11,6 +11,7 @@ class Booking(models.Model):
         COMPLETED = 'COMPLETED'
         REJECTED = 'REJECTED'
         PENDING_PAYMENT = 'PENDING_PAYMENT'
+        REFUND_PENDING = 'REFUND_PENDING'
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     homestay = models.ForeignKey(Homestay, on_delete=models.CASCADE)
     check_in = models.DateField(db_index=True)
@@ -27,6 +28,13 @@ class Booking(models.Model):
                                      blank=True, 
                                      on_delete=models.SET_NULL, 
                                      related_name='cancelled_bookings')
+    request_refund_at = models.DateField(null=True, blank=True)
+    request_refund_by = models.ForeignKey(User, 
+                                     null=True, 
+                                     blank=True, 
+                                     on_delete=models.SET_NULL, 
+                                     related_name='request_refund')
+    refund_at = models.DateField(null=True, blank=True)
     cancel_reason = models.TextField(null=True, blank=True)
     confirm_at = models.DateTimeField(null=True, blank=True)
     # rejected_at = models.DateTimeField(null=True, blank=True) theem sau

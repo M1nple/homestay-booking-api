@@ -51,9 +51,7 @@ class CustomerBookingViewSet(
 
     @action(detail=True, methods=['patch'])
     def cancel(self, request, pk=None):
-
         booking = self.get_object()
-
         # chỉ cho phép hủy booking chưa hoàn thành
         if booking.status not in [
             Booking.Status.PENDING,
@@ -66,20 +64,36 @@ class CustomerBookingViewSet(
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
+        
+        elif booking.check_in <= date.today():
+            raise ValidationError(
+                "Không thể yêu cầu hoàn tiền sau ngày nhận phòng."
+            )
 
-        # cập nhật trạng thái
-        booking.status = Booking.Status.CANCELLED
+        if booking.status == booking.Status.PENDING:
+            # cập nhật trạng thái
+            booking.status = Booking.Status.CANCELLED
+            booking.cancelled_at = timezone.now()
+            booking.cancelled_by = request.user
+            booking.save()
+            return Response(
+                {
+                    'message': 'Hủy booking thành công.'
+                },
+                status=status.HTTP_200_OK
+            )
+        elif booking.status == booking.Status.CONFIRMED:
+            booking.status = Booking.Status.REFUND_PENDING
+            booking.request_refund_at = timezone.now()
+            booking.request_refund_by = request.user
+            booking.save()
+            return Response(
+                {
+                    'message': 'Yêu cầu hoàn tiền đã được gửi.'
+                },
+                status=status.HTTP_200_OK
+            )
 
-        booking.cancelled_at = timezone.now()
 
-        booking.cancelled_by = request.user
 
-        booking.save()
-
-        return Response(
-            {
-                'message': 'Hủy booking thành công.'
-            },
-            status=status.HTTP_200_OK
-        )
 

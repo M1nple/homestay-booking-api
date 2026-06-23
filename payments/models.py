@@ -9,6 +9,7 @@ class Payment(models.Model):
         PENDING = 'PENDING'
         SUCCESS = 'SUCCESS'
         FAILED = 'FAILED'
+        REFUNDED ='REFUNDED'
     class Method(models.TextChoices):
         VNPAY = 'VNPAY'
         MOMO = 'MOMO'
