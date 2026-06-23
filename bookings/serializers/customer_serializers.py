@@ -1,10 +1,10 @@
 from datetime import timedelta, date
 from django.utils import timezone
+from django.db import transaction
 from rest_framework import serializers
 from bookings.models import Booking, BookingRoom
 from rooms.models import Room
 from homestays.models import Homestay
-
 class BookingRoomInputSerializer(serializers.Serializer):
 
     room = serializers.PrimaryKeyRelatedField( #PrimaryKeyRelatedField là một trường đặc biệt trong Django REST Framework được sử dụng để liên kết một đối tượng với một đối tượng khác thông qua khóa chính (primary key). Nó cho phép bạn chỉ định một đối tượng liên quan bằng cách sử dụng giá trị của khóa chính của nó.
@@ -99,6 +99,19 @@ class CreateBookingSerializer(serializers.ModelSerializer):
         # validate room conflict
         for item in rooms:
             room = item['room']
+
+            # Phòng bảo trì
+            if room.status == Room.Status.MAINTENANCE:
+                raise serializers.ValidationError(
+                    f'Phòng "{room.name}" đang được bảo trì.'
+                )
+
+            # Phòng đã bị ẩn/xóa mềm
+            if room.deleted_at:
+                raise serializers.ValidationError(
+                    f'Phòng "{room.name}" không còn khả dụng.'
+                )
+
             conflict = BookingRoom.objects.filter( # Query tìm booking overlap.
                 room=room,
                 booking__check_in__lt=check_out,
@@ -114,32 +127,95 @@ class CreateBookingSerializer(serializers.ModelSerializer):
                 )
         return data
 
+    # def create(self, validated_data):
+    #     rooms_data = validated_data.pop('rooms')
+    #     user = self.context['request'].user
+    #     check_in = validated_data['check_in']
+    #     check_out = validated_data['check_out']
+    #     days = (check_out - check_in).days
+    #     total_price = 0
+    #     booking = Booking.objects.create(
+    #         user=user,
+    #         total_price=0,
+    #         expired_at=timezone.now() + timedelta(minutes=15),
+    #         **validated_data
+    #     )
+    #     for item in rooms_data:
+    #         room = item['room']
+    #         room_price = room.price * days
+    #         total_price += room_price
+    #         BookingRoom.objects.create(
+    #             booking=booking,
+    #             room=room,
+    #             price=room.price
+    #         )
+    #     booking.total_price = total_price
+    #     booking.save()
+    #     return booking
+ 
+
     def create(self, validated_data):
         rooms_data = validated_data.pop('rooms')
+
         user = self.context['request'].user
         check_in = validated_data['check_in']
         check_out = validated_data['check_out']
+
         days = (check_out - check_in).days
-        total_price = 0
-        booking = Booking.objects.create(
-            user=user,
-            total_price=0,
-            expired_at=timezone.now() + timedelta(minutes=15),
-            **validated_data
-        )
-        for item in rooms_data:
-            room = item['room']
-            room_price = room.price * days
-            total_price += room_price
-            BookingRoom.objects.create(
-                booking=booking,
-                room=room,
-                price=room.price
+
+        with transaction.atomic():
+            # Lock tất cả phòng cần đặt
+            room_ids = [
+                item['room'].id
+                for item in rooms_data
+            ]
+            locked_rooms = {
+                room.id: room
+                for room in Room.objects.select_for_update().filter(
+                    id__in=room_ids
+                )
+            }
+            # Kiểm tra lại conflict sau khi lock
+            for item in rooms_data:
+                room = locked_rooms[item['room'].id]
+                conflict = BookingRoom.objects.filter(
+                    room=room,
+                    booking__check_in__lt=check_out,
+                    booking__check_out__gt=check_in,
+                    booking__status__in=[
+                        Booking.Status.PENDING,
+                        Booking.Status.CONFIRMED
+                    ]
+                ).exists()
+                if conflict:
+                    raise serializers.ValidationError(
+                        f'Phòng "{room.name}" đã được đặt trong khoảng thời gian này.'
+                    )
+            # Tạo booking
+            booking = Booking.objects.create(
+                user=user,
+                total_price=0,
+                expired_at=timezone.now() + timedelta(minutes=15),
+                **validated_data
             )
-        booking.total_price = total_price
-        booking.save()
-        return booking
- 
+            total_price = 0
+
+            # Tạo BookingRoom
+            for item in rooms_data:
+                room = locked_rooms[item['room'].id]
+                room_price = room.price * days
+                total_price += room_price
+                BookingRoom.objects.create(
+                    booking=booking,
+                    room=room,
+                    price=room.price
+                )
+            booking.total_price = total_price
+            booking.save(
+                update_fields=['total_price']
+            )
+            return booking
+
 class BookingDetailSerializer(serializers.ModelSerializer):
 
     rooms = BookingRoomSerializer(

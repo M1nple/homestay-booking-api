@@ -108,6 +108,6 @@ class PublicRoomDetailSerializer(serializers.ModelSerializer):
                 flat=True
             )
 
-            return queryset.exclude(
+            return queryset.exclude( # exclude loại bỏ
                 id__in=booked_rooms
             )
